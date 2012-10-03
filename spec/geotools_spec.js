@@ -66,6 +66,23 @@ describe("Geohash decode_bbox ", function() {
 	});
 });
 
+describe("Calculate neighboring geoHashes", function() {
+    var hash=geotools.encode(testPoints.brandenBurgerGate[0],testPoints.brandenBurgerGate[1], 5);
+    it("should handle east and west",function() {
+        var west=geotools.west(hash);
+        var east=geotools.east(west);
+        expect(west).not.toBe(hash);
+        expect(east).toBe(hash);
+    });
+    
+    it("should handle north and south",function() {
+        var north=geotools.north(hash);
+        var south=geotools.south(north);
+        expect(north).not.toBe(hash);
+        expect(south).toBe(hash);
+    });
+});
+
 describe("bounding box for polygon",function(){
 	it("should calculate boundingbox for a polygon", function() {
 		var polygon = [testPoints.berlin,testPoints.newyork,testPoints.buenosaires];
