@@ -167,6 +167,7 @@ var geotools = function($) {
 
         return $.encode(lat, lon, geoHash.length);
     }
+    
 
     /**
      * @return the geo hash of the same length directly east of the bounding
@@ -185,6 +186,16 @@ var geotools = function($) {
         return $.encode(lat, lon, geoHash.length);
     }
 
+    /**
+     * @param geoHash
+     * @param latitude
+     * @param longitude
+     * @return true if the coordinate is contained by the bounding box for this
+     *         geo hash
+     */
+    $.geohashContains=function(geoHash, latitude, longitude) {
+        return $.bboxContains($.decode_bbox(geoHash), latitude, longitude);
+    }
 
 	$.bboxForPolygon = function(polygonPoints) {
         var minLat = 91;

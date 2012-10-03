@@ -83,6 +83,13 @@ describe("Calculate neighboring geoHashes", function() {
     });
 });
 
+describe("geohash contains function", function() {
+    it("should contain the point", function() {
+        hash=geotools.encode(testPoints.amsterdam[0],testPoints.amsterdam[1],4);
+        expect(geotools.geohashContains(hash,testPoints.amsterdam[0],testPoints.amsterdam[1]));
+    });
+});
+
 describe("bounding box for polygon",function(){
 	it("should calculate boundingbox for a polygon", function() {
 		var polygon = [testPoints.berlin,testPoints.newyork,testPoints.buenosaires];
