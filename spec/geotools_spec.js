@@ -90,6 +90,24 @@ describe("geohash contains function", function() {
     });
 });
 
+describe("calculate subhashes", function(){
+    it("should have 32 subhashes", function() {
+        expect(geotools.subHashes('u33dbf').length).toBe(32);
+    });
+    
+    it("should have 16 subhashes", function() {
+        expect(geotools.subHashesN('u33dbf').length).toBe(16);
+        expect(geotools.subHashesS('u33dbf').length).toBe(16);
+    });
+
+    it("should have 8 subhashes", function() {
+        expect(geotools.subHashesNE('u33dbf').length).toBe(8);
+        expect(geotools.subHashesNW('u33dbf').length).toBe(8);
+        expect(geotools.subHashesSE('u33dbf').length).toBe(8);
+        expect(geotools.subHashesSW('u33dbf').length).toBe(8);
+    });
+});
+
 describe("bounding box for polygon",function(){
 	it("should calculate boundingbox for a polygon", function() {
 		var polygon = [testPoints.berlin,testPoints.newyork,testPoints.buenosaires];

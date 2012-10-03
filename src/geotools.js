@@ -196,6 +196,168 @@ var geotools = function($) {
     $.geohashContains=function(geoHash, latitude, longitude) {
         return $.bboxContains($.decode_bbox(geoHash), latitude, longitude);
     }
+    
+    /**
+     * Return the 32 geo hashes this geohash can be divided into.
+     *
+     * They are returned alpabetically sorted but in the real world they follow
+     * this pattern:
+     *
+     * <pre>
+     * u33dbfc0 u33dbfc2 | u33dbfc8 u33dbfcb
+     * u33dbfc1 u33dbfc3 | u33dbfc9 u33dbfcc
+     * -------------------------------------
+     * u33dbfc4 u33dbfc6 | u33dbfcd u33dbfcf
+     * u33dbfc5 u33dbfc7 | u33dbfce u33dbfcg
+     * -------------------------------------
+     * u33dbfch u33dbfck | u33dbfcs u33dbfcu
+     * u33dbfcj u33dbfcm | u33dbfct u33dbfcv
+     * -------------------------------------
+     * u33dbfcn u33dbfcq | u33dbfcw u33dbfcy
+     * u33dbfcp u33dbfcr | u33dbfcx u33dbfcz
+     * </pre>
+     *
+     * the first 4 share the north east 1/8th the first 8 share the north east
+     * 1/4th the first 16 share the north 1/2 and so on.
+     *
+     * They are ordered as follows:
+     *
+     * <pre>
+     *  0  2  8 10
+     *  1  3  9 11
+     *  4  6 12 14
+     *  5  7 13 15
+     * 16 18 24 26
+     * 17 19 25 27
+     * 20 22 28 30
+     * 21 23 29 31
+     * </pre>
+     *
+     * Some useful properties: Anything ending with
+     *
+     * <pre>
+     * 0-g = N
+     * h-z = S
+     *
+     * 0-7 = NW
+     * 8-g = NE
+     * h-r = SW
+     * s-z = SE
+     * </pre>
+     *
+     * @param geoHash
+     * @return String array with the geo hashes.
+     */
+    $.subHashes=function(geoHash) {
+        var list = [];
+        for (var i=0;i<BASE32_CHARS.length;i++) {
+            list[i] = geoHash + BASE32_CHARS[i];
+        }
+        return list;
+    }
+
+    /**
+     * @param geoHash
+     * @return the 16 northern sub hashes of the geo hash
+     */
+    $.subHashesN=function(geoHash) {
+        var list = [];
+        var n=0;
+        for (var i in BASE32_CHARS) {
+            var c=BASE32_CHARS[i];
+            if (c >= '0' && c <= 'g') {
+                list[n] =geoHash + c;
+                n++;
+            }
+        }
+        return list;
+    }
+
+    /**
+     * @param geoHash
+     * @return the 16 southern sub hashes of the geo hash
+     */
+    $.subHashesS=function(geoHash) {
+        var list = [];
+        var n=0;
+        for (var i in BASE32_CHARS) {
+            var c=BASE32_CHARS[i];
+            if (c >= 'h' && c <= 'z') {
+                list[n] =geoHash + c;
+                n++;
+            }
+        }
+        return list;
+    }
+
+    /**
+     * @param geoHash
+     * @return the 8 north-west sub hashes of the geo hash
+     */    
+     $.subHashesNW=function(geoHash) {
+        var list = [];
+        var n=0;
+        for (var i in BASE32_CHARS) {
+            var c=BASE32_CHARS[i];
+            if (c >= '0' && c <= '7') {
+                list[n] =geoHash + c;
+                n++;
+            }
+        }
+        return list;
+    }
+
+    /**
+     * @param geoHash
+     * @return the 8 north-east sub hashes of the geo hash
+     */
+    $.subHashesNE=function(geoHash) {
+        var list = [];
+        var n=0;
+        for (var i in BASE32_CHARS) {
+            var c=BASE32_CHARS[i];
+            if (c >= '8' && c <= 'g') {
+                list[n] =geoHash + c;
+                n++;
+            }
+        }
+        return list;
+    }
+
+    /**
+     * @param geoHash
+     * @return the 8 south-west sub hashes of the geo hash
+     */
+    $.subHashesSW=function(geoHash) {
+        var list = [];
+        var n=0;
+        for (var i in BASE32_CHARS) {
+            var c=BASE32_CHARS[i];
+            if (c >= 'h' && c <= 'r') {
+                list[n] =geoHash + c;
+                n++;
+            }
+        }
+        return list;
+    }
+
+    /**
+     * @param geoHash
+     * @return the 8 south-east sub hashes of the geo hash
+     */
+    $.subHashesSE=function(geoHash) {
+        var list = [];
+        var n=0;
+        for (var i in BASE32_CHARS) {
+            var c=BASE32_CHARS[i];
+            if (c >= 's' && c <= 'z') {
+                list[n] =geoHash + c;
+                n++;
+            }
+        }
+        return list;
+    }
+
 
 	$.bboxForPolygon = function(polygonPoints) {
         var minLat = 91;
