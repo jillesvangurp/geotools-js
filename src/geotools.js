@@ -441,6 +441,69 @@ var geotools = function($) {
         return [ [ bbox[0], bbox[2] ], [ bbox[1], bbox[2] ], [ bbox[1], bbox[3] ], [ bbox[0], bbox[3] ] ];
     };
     
+        /**
+     * Converts a circle to a polygon.
+     *
+     * This method does not behave very well very close to the poles because the math gets a little funny there.
+     *
+     * @param segments
+     *            number of segments the polygon should have. The higher this
+     *            number, the better of an approximation the polygon is for the
+     *            circle.
+     * @param latitude
+     * @param longitude
+     * @param radius
+     * @return an array of the points [latitude,longitude] that make up the
+     *         polygon.
+     */
+    $.circle2polygon = function(segments, latitude, longitude, radius) {
+        if (segments < 5) {
+            throw new Error("you need a minimum of 5 segments");
+        }
+        // for n segments you need n+1 points
+        var points = [];
+
+        var relativeLatitude = radius / EARTH_RADIUS_METERS * 180 / Math.PI;
+
+        // things get funny near the north and south pole, so doing a modulo 90
+        // to ensure that the relative amount of degrees doesn't get too crazy.
+        var relativeLongitude = relativeLatitude / Math.cos(toRadians(latitude))%90;
+
+        for (var i = 0; i < segments; i++) {
+            // radians go from 0 to 2*PI; we want to divide the circle in nice
+            // segments
+            var theta = 2 * Math.PI * i / segments;
+            // trying to avoid theta being exact factors of pi because that results in some funny behavior around the north-pole
+            theta=theta+=0.1;
+            if(theta>= 2*Math.PI) {
+                theta=theta-2*Math.PI;
+            }
+
+            // on the unit circle, any point of the circle has the coordinate
+            // cos(t),sin(t) where t is the radian. So, all we need to do that
+            // is multiply that with the relative latitude and longitude
+            // note, latitude takes the role of y, not x. By convention we
+            // always note latitude, longitude instead of the other way around
+            var latOnCircle = latitude + relativeLatitude * Math.sin(theta);
+            var lonOnCircle = longitude + relativeLongitude * Math.cos(theta);
+            if (lonOnCircle > 180) {
+                lonOnCircle = -180 + (lonOnCircle - 180);
+            } else if (lonOnCircle < -180) {
+                lonOnCircle = 180 - (lonOnCircle + 180);
+            }
+
+            if(latOnCircle > 90) {
+                latOnCircle = 90 - (latOnCircle-90);
+            } else if(latOnCircle < -90) {
+                latOnCircle = -90 - (latOnCircle+90);
+            }
+
+            points[i] = [ latOnCircle, lonOnCircle ];
+        }
+
+        return points;
+    }
+
 	return $;
 
 }(geotools || {});

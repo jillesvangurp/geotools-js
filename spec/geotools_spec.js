@@ -152,3 +152,18 @@ describe("convert bbox to a polygon", function() {
         expect(''+polygon[3]).toBe(''+[1,2]);
     });
 });
+
+describe("convert circle to polygon", function() {
+    it("all points should have same distance to the centre and evenly spaced on the circle", function() {
+        var polygon = geotools.circle2polygon(200,testPoints.berlin[0],testPoints.berlin[1],2000);
+        expect(polygon.length).toBe(200);
+        var last=polygon[0];
+        for(var i=1;i<polygon.length;i++) {
+            var next = polygon[i]
+            expect(Math.round(geotools.distance(last[0],last[1],next[0],next[1]))).toBe(Math.round(2*Math.PI*2000/200));
+            expect(Math.round(geotools.distance(testPoints.berlin[0],testPoints.berlin[1],next[0],next[1]))).toBe(2000);
+            
+            var last = next;
+        }
+    });
+});
