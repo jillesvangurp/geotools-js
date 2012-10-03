@@ -503,6 +503,75 @@ var geotools = function($) {
 
         return points;
     }
+    
+    $.getPolygonForPoints=function(points) {
+        if(points.length <3) {
+            throw new Error("need at least 3 pois for a cluster");
+        }
+        var xSorted = points.slice();
+        xSorted.sort(function(p1,p2) {
+            if (p1[0] == p2[0]) {               
+                  return p1[1]- p2[1];
+              } else {
+                  return p1[0]-p2[0];
+              }
+            
+        });
+
+        var n = xSorted.length;
+
+        var lUpper = [];
+
+        lUpper[0] = xSorted[0];
+        lUpper[1] = xSorted[1];
+
+        var lUpperSize = 2;
+        for (var i = 2; i < n; i++) {
+            lUpper[lUpperSize] = xSorted[i];
+            lUpperSize++;
+            while (lUpperSize > 2 && !rightTurn(lUpper[lUpperSize - 3], lUpper[lUpperSize - 2], lUpper[lUpperSize - 1])) {
+                // Remove the middle point of the three last
+                lUpper[lUpperSize - 2] = lUpper[lUpperSize - 1];
+                lUpperSize--;
+            }
+        }
+
+        var lLower = [];
+
+        lLower[0] = xSorted[n - 1];
+        lLower[1] = xSorted[n - 2];
+
+        var lLowerSize = 2;
+
+        for (var i = n - 3; i >= 0; i--) {
+            lLower[lLowerSize] = xSorted[i];
+            lLowerSize++;
+
+            while (lLowerSize > 2 && !rightTurn(lLower[lLowerSize - 3], lLower[lLowerSize - 2], lLower[lLowerSize - 1])) {
+                // Remove the middle point of the three last
+                lLower[lLowerSize - 2] = lLower[lLowerSize - 1];
+                lLowerSize--;
+            }
+        }
+
+        var result = [];
+        var idx=0;
+        for (var i = 0; i < lUpperSize; i++) {
+            result[idx] = (lUpper[i]);
+            idx++;
+        }
+
+        for (var i = 1; i < lLowerSize - 1; i++) {
+            result[idx] = (lLower[i]);
+            idx++;
+        }
+
+        return result;
+    }
+
+    function rightTurn(a,  b, c) {
+        return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]) > 0;
+    }
 
 	return $;
 

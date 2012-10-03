@@ -154,16 +154,36 @@ describe("convert bbox to a polygon", function() {
 });
 
 describe("convert circle to polygon", function() {
-    it("all points should have same distance to the centre and evenly spaced on the circle", function() {
-        var polygon = geotools.circle2polygon(200,testPoints.berlin[0],testPoints.berlin[1],2000);
+    function test(latitude,longitude,radius) {
+        var polygon = geotools.circle2polygon(200,latitude,longitude,radius);
         expect(polygon.length).toBe(200);
         var last=polygon[0];
         for(var i=1;i<polygon.length;i++) {
             var next = polygon[i]
-            expect(Math.round(geotools.distance(last[0],last[1],next[0],next[1]))).toBe(Math.round(2*Math.PI*2000/200));
-            expect(Math.round(geotools.distance(testPoints.berlin[0],testPoints.berlin[1],next[0],next[1]))).toBe(2000);
+            expect(Math.round(geotools.distance(last[0],last[1],next[0],next[1]))).toBe(Math.round(2*Math.PI*radius/200));
+            expect(Math.round(geotools.distance(latitude,longitude,next[0],next[1]))).toBe(radius);
             
             var last = next;
         }
+    }
+
+    it("all points should have same distance to the centre and evenly spaced on the circle", function() {
+        test(testPoints.berlin[0],testPoints.berlin[1],2000)
     });
+    
+    it("circle at 180 longitude should work as well", function() {
+        test(testPoints.berlin[0],180,2000)
+    });
+});
+
+describe("calculate polygon for points", function() {
+    var polygon = geotools.getPolygonForPoints([testPoints.potsDammerPlatz,testPoints.senefelderPlatz,testPoints.naturkundeMuseum]);
+    it("polygon should contain rosenthalerplatz",function(){
+        expect(geotools.polygonContains(polygon, testPoints.rosenthalerPlatz[0],testPoints.rosenthalerPlatz[1]));   
+    });
+    
+    it("polygon should not contain moritzplatz",function(){
+        expect(!geotools.polygonContains(polygon, testPoints.moritzPlatz[0],testPoints.moritzPlatz[1]));   
+    });
+
 });
