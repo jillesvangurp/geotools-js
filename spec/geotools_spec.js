@@ -141,3 +141,14 @@ describe("polygon centroid", function() {
         expect(geotools.polygonContains(testPolygon,centroid[0],centroid[1]));
     });
 });
+
+describe("convert bbox to a polygon", function() {
+    it("should convert correctly", function() {
+        var polygon = geotools.bbox2polygon([1,2,1,2]);
+        expect(polygon.length).toBe(4);
+        expect(''+polygon[0]).toBe(''+[1,1]);
+        expect(''+polygon[1]).toBe(''+[2,1]);
+        expect(''+polygon[2]).toBe(''+[2,2]);
+        expect(''+polygon[3]).toBe(''+[1,2]);
+    });
+});

@@ -437,6 +437,10 @@ var geotools = function($) {
         return [ cumLat / polygonPoints.length, cumLon / polygonPoints.length ];
     }
     
+    $.bbox2polygon=function(bbox) {
+        return [ [ bbox[0], bbox[2] ], [ bbox[1], bbox[2] ], [ bbox[1], bbox[3] ], [ bbox[0], bbox[3] ] ];
+    };
+    
 	return $;
 
 }(geotools || {});
