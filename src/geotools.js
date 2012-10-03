@@ -154,7 +154,7 @@ var geotools = function($) {
      */
     $.bboxContains=function(bbox, latitude, longitude) {
         return bbox[0] <= latitude && latitude <= bbox[1] && bbox[2] <= longitude && longitude <= bbox[3];
-    }
+    };
     
         /**
      * Determine whether a point is contained in a polygon. Note, technically
@@ -236,7 +236,7 @@ var geotools = function($) {
         }
 
         return (hits & 1) != 0;
-    }
+    };
     
         /**
      * Simple rounding method that allows you to get rid of some decimals in a
@@ -253,9 +253,75 @@ var geotools = function($) {
         }
         var factor = Math.pow(10, decimals);
         return Math.round(d * factor) / factor;
-    }
+    };
+    
+
+	$.linesCross=function(x1, y1, x2, y2, u1, v1, u2, v2) {
+        // formula for line: y= a+bx
+
+        // vertical lines result in a divide by 0;
+        var line1Vertical = x2 == x1;
+        var line2Vertical = u2 == u1;
+        if (line1Vertical && line2Vertical) {
+            // x=a
+            if(x1==u1) {
+                // lines are the same
+                return y1<=v1 && v1<y2 || y1<=v2 && v2<y2;
+            } else {
+                // parallel -> they don't intersect!
+                return false;
+            }
+        } else if (line1Vertical && !line2Vertical) {
+            var b2 = (v2 - v1) / (u2 - u1);
+            var a2 = v1 - b2 * u1;
+
+            var xi=x1;
+            var yi=a2+b2*xi;
+
+            return yi>=y1 && yi<=y2;
+
+        } else if (!line1Vertical && line2Vertical) {
+            var b1 = (y2 - y1) / (x2 - x1);
+            var a1 = y1 - b1 * x1;
+
+            var xi=u1;
+            var yi=a1+b1*xi;
+
+            return yi>=v1 && yi<=v2;
+        } else {
+
+            var b1 = (y2 - y1) / (x2 - x1);
+            // divide by zero if second line vertical
+            var b2 = (v2 - v1) / (u2 - u1);
+
+            var a1 = y1 - b1 * x1;
+            var a2 = v1 - b2 * u1;
+
+            if (b1 - b2 == 0) {
+                if(a1 == a2) {
+                    // lines are the same
+                    return x1<=u1 && u1<x2 || x1<=u2 && u2<x2;
+                } else {
+                    // parallel -> they don't intersect!
+                    return false;
+                }
+            }
+            // calculate intersection point xi,yi
+            var xi = -(a1 - a2) / (b1 - b2);
+            var yi = a1 + b1 * xi;
+            if ((x1 - xi) * (xi - x2) >= 0 &&
+                    (u1 - xi) * (xi - u2) >= 0 &&
+                    (y1 - yi) * (yi - y2) >= 0 &&
+                    (v1 - yi) * (yi - v2) >= 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    };
     
 	return $;
+
 }(geotools || {});
 
 var isCommonJS = typeof window == "undefined";

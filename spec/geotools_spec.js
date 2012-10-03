@@ -99,3 +99,17 @@ describe("rounding to specified number of decimals", function() {
 		expect(geotools.roundToDecimals(1.1234,2)).toBe(1.12);
 	});
 });
+
+describe("check if lines cross", function() {
+	it("should cross", function() {
+		expect(geotools.linesCross(1, 1, 2, 2, 1, 2, 2, 1));
+		expect(geotools.linesCross(1, 1, 1, 10, 1, 3, 1, 4));
+		expect(geotools.linesCross(1, 666, 10, 666, 3, 666, 4, 666));
+	});
+	it("should not cross", function() {
+		expect(!geotools.linesCross(1, 2, 3, 4, 10, 20, 20, 10));
+		expect(!geotools.linesCross(1, 1, 2, 2, 2, 2, 3, 3));
+		expect(!geotools.linesCross(1, 1, 1, 5, 1, 6, 1, 10));
+		expect(!geotools.linesCross(1, 666, 5, 666, 6, 666, 10, 666));
+	});
+});
