@@ -414,6 +414,28 @@ var geotools = function($) {
         return EARTH_RADIUS * c;
     }
 
+    /**
+     * Simple/naive method for calculating the center of a polygon based on
+     * averaging the latitude and longitude. Better algorithms exist but this
+     * may be good enough for most purposes.
+     *
+     * Note, for some polygons, this may actually be located outside the
+     * polygon.
+     *
+     * @param polygonPoints
+     *            polygonPoints points that make up the polygon as arrays of
+     *            [latitude,longitude]
+     * @return the average latitude and longitude.
+     */
+    $.getPolygonCenter=function(polygonPoints) {
+        var cumLat = 0;
+        var cumLon = 0;
+        for (var coordinate in polygonPoints) {
+            cumLat += coordinate[0];
+            cumLon += coordinate[1];
+        }
+        return [ cumLat / polygonPoints.length, cumLon / polygonPoints.length ];
+    }
     
 	return $;
 

@@ -14,6 +14,8 @@ var testPoints = {
 	oranienburgerTor:[52.525339,13.38707]
 };
 
+var testPolygon = [testPoints.berlin,testPoints.london,testPoints.buenosaires];
+
 describe("Geohash encode/decode ", function() {
 
 	var decodedGeohashes = [[0.10000004433095455, -0.09999996051192284, "ebpbtdpntc6e"], [52.5308879557997, 13.394904043525457, "u33dbfcyegk2"]];
@@ -84,13 +86,11 @@ describe("bounding box containment", function() {
 });
 
 describe("polygon containment", function() {
-	var polygon = [testPoints.berlin,testPoints.london,testPoints.buenosaires];
-
 	it("should contain amsterdam", function(){
-		expect(geotools.polygonContains(polygon, testPoints.amsterdam[0],testPoints.amsterdam[1]));		
+		expect(geotools.polygonContains(testPolygon, testPoints.amsterdam[0],testPoints.amsterdam[1]));		
 	});
 	it("should not contain sydney", function(){
-		expect(!geotools.polygonContains(polygon, testPoints.sydney[0],testPoints.sydney[1]));		
+		expect(!geotools.polygonContains(testPolygon, testPoints.sydney[0],testPoints.sydney[1]));		
 	});
 });
 
@@ -132,5 +132,12 @@ describe("point translation", function() {
 describe("haversine distance", function() {
     it("should calculate the distance", function() {
         expect(geotools.distance(testPoints.berlin[0],testPoints.berlin[1],testPoints.sydney[0],testPoints.sydney[1])).toBe(16095663.428576712);
+    });
+});
+
+describe("polygon centroid", function() {
+    it("should contain its own centroid",function() {
+        var centroid = geotools.getPolygonCenter(testPolygon);
+        expect(geotools.polygonContains(testPolygon,centroid[0],centroid[1]));
     });
 });
