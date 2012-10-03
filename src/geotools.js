@@ -156,6 +156,88 @@ var geotools = function($) {
         return bbox[0] <= latitude && latitude <= bbox[1] && bbox[2] <= longitude && longitude <= bbox[3];
     }
     
+        /**
+     * Determine whether a point is contained in a polygon. Note, technically
+     * the points that make up the polygon are not contained by it.
+     *
+     * @param latitude
+     * @param longitude
+     * @param polygonPoints
+     *            polygonPoints points that make up the polygon as arrays of
+     *            [latitude,longitude]
+     * @return true if the polygon contains the coordinate
+     */
+    $.polygonContains=function(polygonPoints, latitude, longitude) {
+
+        if (polygonPoints.length <= 2) {
+            throw new Error("a polygon must have at least three points");
+        }
+
+        var bbox = $.bboxForPolygon(polygonPoints);
+        if (!$.bboxContains(bbox, latitude, longitude)) {
+            // outside the containing bbox
+            return false;
+        }
+
+        var hits = 0;
+
+        var lastLatitude = polygonPoints[polygonPoints.length - 1][0];
+        var lastLongitude = polygonPoints[polygonPoints.length - 1][1];
+        var currentLatitude, currentLongitude;
+
+        // Walk the edges of the polygon
+        for (var i = 0; i < polygonPoints.length; lastLatitude = currentLatitude, lastLongitude = currentLongitude, i++) {
+            currentLatitude = polygonPoints[i][0];
+            currentLongitude = polygonPoints[i][1];
+
+            if (currentLongitude == lastLongitude) {
+                continue;
+            }
+
+            var leftLatitude;
+            if (currentLatitude < lastLatitude) {
+                if (latitude >= lastLatitude) {
+                    continue;
+                }
+                leftLatitude = currentLatitude;
+            } else {
+                if (latitude >= currentLatitude) {
+                    continue;
+                }
+                leftLatitude = lastLatitude;
+            }
+
+            var test1, test2;
+            if (currentLongitude < lastLongitude) {
+                if (longitude < currentLongitude || longitude >= lastLongitude) {
+                    continue;
+                }
+                if (latitude < leftLatitude) {
+                    hits++;
+                    continue;
+                }
+                test1 = latitude - currentLatitude;
+                test2 = longitude - currentLongitude;
+            } else {
+                if (longitude < lastLongitude || longitude >= currentLongitude) {
+                    continue;
+                }
+                if (latitude < leftLatitude) {
+                    hits++;
+                    continue;
+                }
+                test1 = latitude - lastLatitude;
+                test2 = longitude - lastLongitude;
+            }
+
+            if (test1 < test2 / (lastLongitude - currentLongitude) * (lastLatitude - currentLatitude)) {
+                hits++;
+            }
+        }
+
+        return (hits & 1) != 0;
+    }
+    
 	return $;
 }(geotools || {});
 

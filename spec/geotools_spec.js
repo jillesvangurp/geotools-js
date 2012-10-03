@@ -82,3 +82,14 @@ describe("bounding box containment", function() {
 		expect(!geotools.bboxContains(bbox, testPoints.sydney[0],testPoints.sydney[1]));		
 	});
 });
+
+describe("polygon containment", function() {
+	var polygon = [testPoints.berlin,testPoints.london,testPoints.buenosaires];
+
+	it("should contain amsterdam", function(){
+		expect(geotools.polygonContains(polygon, testPoints.amsterdam[0],testPoints.amsterdam[1]));		
+	});
+	it("should not contain sydney", function(){
+		expect(!geotools.polygonContains(polygon, testPoints.sydney[0],testPoints.sydney[1]));		
+	});
+});
