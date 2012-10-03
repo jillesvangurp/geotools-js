@@ -25,7 +25,7 @@ h1. Features
 
 h1. Changelog & releases
 
-There is no formal release process for this project. The latest version in git that passes the provided tests should be good 
+There is no formal release process for this project other than 'git push origin master'. The latest version in git that passes the provided tests should be good 
 enough for general use and generally there should be no reason to use something older. I'll document major changes here.
 
 * port of code from java

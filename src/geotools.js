@@ -1,5 +1,3 @@
-try{
-
 var geotools = function($) {
 	var DEFAULT_PRECISION = 12;
 	var BITS = [ 16, 8, 4, 2, 1 ]
@@ -92,7 +90,7 @@ var geotools = function($) {
 		return geohash;
 	}
 	
-	    /**
+    /**
      * @param geohash
      * @return double array representing the bounding box for the geohash of
      *         [nort latitude, south latitude, east longitude, west longitude]
@@ -147,12 +145,20 @@ var geotools = function($) {
         return [ minLat, maxLat, minLon, maxLon ];
 	};
 
+    /**
+     * @param bbox
+     *            double array of [minLat,maxLat,minLon,maxLon}
+     * @param latitude
+     * @param longitude
+     * @return true if the latitude and longitude are contained in the bbox
+     */
+    $.bboxContains=function(bbox, latitude, longitude) {
+        return bbox[0] <= latitude && latitude <= bbox[1] && bbox[2] <= longitude && longitude <= bbox[3];
+    }
+    
 	return $;
 }(geotools || {});
 
 var isCommonJS = typeof window == "undefined";
 if (isCommonJS)
 	exports.geotools = geotools;
-
-
-} catch(e) { alert(e); }

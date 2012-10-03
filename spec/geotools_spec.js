@@ -1,5 +1,3 @@
-try{
-
 var testPoints = {
 	sydney:[-33.872796,151.206146],
 	buenosaires:[-34.602875,-58.380449],
@@ -15,6 +13,7 @@ var testPoints = {
 	rosenthalerPlatz:[52.529948,13.401361],
 	oranienburgerTor:[52.525339,13.38707]
 };
+
 describe("Geohash encode/decode ", function() {
 
 	var decodedGeohashes = [[0.10000004433095455, -0.09999996051192284, "ebpbtdpntc6e"], [52.5308879557997, 13.394904043525457, "u33dbfcyegk2"]];
@@ -73,4 +72,13 @@ describe("bounding box for polygon",function(){
 	});
 });
 
-}catch(e) {alert(e);}
+describe("bounding box containment", function() {
+	var bbox = geotools.bboxForPolygon([testPoints.berlin,testPoints.london,testPoints.buenosaires]);
+
+	it("should contain amsterdam", function(){
+		expect(geotools.bboxContains(bbox, testPoints.amsterdam[0],testPoints.amsterdam[1]));		
+	});
+	it("should not contain sydney", function(){
+		expect(!geotools.bboxContains(bbox, testPoints.sydney[0],testPoints.sydney[1]));		
+	});
+});
