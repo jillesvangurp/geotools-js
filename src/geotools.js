@@ -572,6 +572,21 @@ var geotools = function($) {
     function rightTurn(a,  b, c) {
         return (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]) > 0;
     }
+    
+    /**
+     * @param direction n,s,e,w
+     * @param degrees
+     * @param minutes
+     * @param seconds
+     * @return decimal degree
+     */
+    $.toDecimalDegree=function(direction,degrees, minutes,  seconds) {
+        var factor=1;
+        if(direction && (direction.toLowerCase()[0] == "w" || direction.toLowerCase()[direction.length-1] == "s")) {
+            factor=-1;
+        }
+        return (degrees + minutes/60 + seconds/60/60)*factor;
+    }
 
 	return $;
 

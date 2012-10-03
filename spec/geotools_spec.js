@@ -185,5 +185,14 @@ describe("calculate polygon for points", function() {
     it("polygon should not contain moritzplatz",function(){
         expect(!geotools.polygonContains(polygon, testPoints.moritzPlatz[0],testPoints.moritzPlatz[1]));   
     });
+});
 
+describe("should convert degrees, minutes, and seconds to a decimal degree", function() {
+    it("should convert N 52 3' 50.01''", function() {
+        expect(geotools.toDecimalDegree('n',52,3,50.01)).toBe(52.06389166666666); 
+    });
+
+    it("should convert S 52 3' 50.01''", function() {
+        expect(geotools.toDecimalDegree('S',52,3,50.01)).toBe(-52.06389166666666); 
+    });
 });
