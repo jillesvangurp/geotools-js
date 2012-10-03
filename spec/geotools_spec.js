@@ -108,6 +108,30 @@ describe("calculate subhashes", function(){
     });
 });
 
+describe("is east/west/north/south", function() {
+    it("should check is east", function() {
+        expect(geotools.isEast(50,40));
+        expect(!geotools.isEast(40,50));
+        expect(geotools.isEast(1,179));
+        expect(!geotools.isEast(179,1));
+        expect(!geotools.isEast(4,4));
+    });
+    it("should check is west", function() {
+        expect(!geotools.isWest(50,40));
+        expect(geotools.isWest(40,50));
+        expect(!geotools.isWest(1,179));
+        expect(geotools.isWest(179,1));
+        expect(!geotools.isWest(4,4));
+    });
+    
+    it("should check north/south", function() {
+        expect(geotools.isSouth(40,50));
+        expect(geotools.isNorth(60,50));
+        expect(!geotools.isSouth(50,50));
+        expect(!geotools.isNorth(50,50));
+    });
+});
+
 describe("bounding box for polygon",function(){
 	it("should calculate boundingbox for a polygon", function() {
 		var polygon = [testPoints.berlin,testPoints.newyork,testPoints.buenosaires];

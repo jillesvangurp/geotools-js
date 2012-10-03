@@ -1,11 +1,11 @@
 var geotools = function($) {
 	var DEFAULT_PRECISION = 12;
-	var BITS = [ 16, 8, 4, 2, 1 ]
+	var BITS = [ 16, 8, 4, 2, 1 ];
 	var BASE32_CHARS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 	var BASE32_DECODE_MAP = {};
 	for ( i = 0; i < BASE32_CHARS.length; i++) {
 		BASE32_DECODE_MAP[BASE32_CHARS[i]] = i;
-	}
+	};
 	
 	$.decode = function(geohash) {
         var lat_interval = [ -90.0, 90.0 ];
@@ -42,7 +42,7 @@ var geotools = function($) {
 
     /**
      * @param geohash
-     * @return double array representing the bounding box for the geohash of
+     * @return var array representing the bounding box for the geohash of
      *         [nort latitude, south latitude, east longitude, west longitude]
      */
     $.decode_bbox = function(geohash) {
@@ -126,7 +126,7 @@ var geotools = function($) {
         	
         }
 		return geohash;
-	}
+	};
 
     /**
      * @return the geo hash of the same length directly north of the bounding
@@ -138,7 +138,7 @@ var geotools = function($) {
         var lat = bbox[0] - latDiff / 2;
         var lon = (bbox[2] + bbox[3]) / 2;
         return $.encode(lat, lon, geoHash.length);
-    }
+    };
 
     /**
      * @return the geo hash of the same length directly south of the bounding
@@ -150,7 +150,7 @@ var geotools = function($) {
         var lat = bbox[1] + latDiff / 2;
         var lon = (bbox[2] + bbox[3]) / 2;
         return $.encode(lat, lon, geoHash.length);
-    }
+    };
 
     /**
      * @return the geo hash of the same length directly west of the bounding
@@ -166,7 +166,7 @@ var geotools = function($) {
         }
 
         return $.encode(lat, lon, geoHash.length);
-    }
+    };
     
 
     /**
@@ -184,7 +184,7 @@ var geotools = function($) {
         }
 
         return $.encode(lat, lon, geoHash.length);
-    }
+    };
 
     /**
      * @param geoHash
@@ -195,7 +195,7 @@ var geotools = function($) {
      */
     $.geohashContains=function(geoHash, latitude, longitude) {
         return $.bboxContains($.decode_bbox(geoHash), latitude, longitude);
-    }
+    };
     
     /**
      * Return the 32 geo hashes this geohash can be divided into.
@@ -254,7 +254,7 @@ var geotools = function($) {
             list[i] = geoHash + BASE32_CHARS[i];
         }
         return list;
-    }
+    };
 
     /**
      * @param geoHash
@@ -271,7 +271,7 @@ var geotools = function($) {
             }
         }
         return list;
-    }
+    };
 
     /**
      * @param geoHash
@@ -288,7 +288,7 @@ var geotools = function($) {
             }
         }
         return list;
-    }
+    };
 
     /**
      * @param geoHash
@@ -305,7 +305,7 @@ var geotools = function($) {
             }
         }
         return list;
-    }
+    };
 
     /**
      * @param geoHash
@@ -322,7 +322,7 @@ var geotools = function($) {
             }
         }
         return list;
-    }
+    };
 
     /**
      * @param geoHash
@@ -339,7 +339,7 @@ var geotools = function($) {
             }
         }
         return list;
-    }
+    };
 
     /**
      * @param geoHash
@@ -356,6 +356,39 @@ var geotools = function($) {
             }
         }
         return list;
+    };
+
+
+    $.isWest=function(l1, l2) {
+        var ll1 = l1+180;
+        var ll2 = l2+180;
+        if (ll1 < ll2 && ll2 - ll1 < 180) {
+            return true;
+        } else if (ll1 > ll2 && ll2 + 360 - ll1 < 180) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    $.isEast=function( l1,  l2) {
+        var ll1 = l1+180;
+        var ll2 = l2+180;
+        if (ll1 > ll2 && ll1 - ll2 < 180) {
+            return true;
+        } else if (ll1 < ll2 && ll1 + 360 - ll2 < 180) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    $.isNorth=function( l1,  l2) {
+        return l1>l2;
+    }
+
+    $.isSouth=function( l1,  l2) {
+        return l1<l2;
     }
 
 
@@ -377,7 +410,7 @@ var geotools = function($) {
 
     /**
      * @param bbox
-     *            double array of [minLat,maxLat,minLon,maxLon}
+     *            var array of [minLat,maxLat,minLon,maxLon}
      * @param latitude
      * @param longitude
      * @return true if the latitude and longitude are contained in the bbox
@@ -470,7 +503,7 @@ var geotools = function($) {
     
         /**
      * Simple rounding method that allows you to get rid of some decimals in a
-     * double.
+     * var.
      *
      * @param d
      * @param decimals
