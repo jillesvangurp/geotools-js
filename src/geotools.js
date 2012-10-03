@@ -7,7 +7,6 @@ var geotools = function($) {
 		BASE32_DECODE_MAP[BASE32_CHARS[i]] = i;
 	}
 	
-	
 	$.decode = function(geohash) {
         var lat_interval = [ -90.0, 90.0 ];
         var lon_interval = [ -180.0, 180.0 ];
@@ -319,6 +318,102 @@ var geotools = function($) {
             }
         }
     };
+
+    /**
+     * Earth's mean radius, in meters.
+     *
+     * @see http://en.wikipedia.org/wiki/Earth%27s_radius#Mean_radii
+     */
+    var EARTH_RADIUS = 6371000.0;
+
+    var EARTH_RADIUS_METERS = 6371000.0;
+    var EARTH_CIRCUMFERENCE_METERS = EARTH_RADIUS_METERS * Math.PI * 2.0;
+    var DEGREE_LATITUDE_METERS = EARTH_RADIUS_METERS * Math.PI / 180.0;
+
+    function toRadians(d) {
+        return d / 180 * Math.PI;
+    };
+
+    function lengthOfLongitudeDegreeAtLatitude(latitude) {
+        var latitudeInRadians = toRadians(latitude);
+        return Math.cos(latitudeInRadians) * EARTH_CIRCUMFERENCE_METERS / 360.0;
+    }
+
+    /**
+     * Translate a point along the longitude for the specified amount of meters.
+     * Note, this method assumes the earth is a sphere and the result is not
+     * going to be very precise for larger distances.
+     *
+     * @param latitude
+     * @param longitude
+     * @param meters
+     * @return the translated coordinate.
+     */
+    $.translateLongitude=function(latitude, longitude, meters) {
+        return [ latitude,  longitude + meters / lengthOfLongitudeDegreeAtLatitude(latitude)];
+    }
+
+    /**
+     * Translate a point along the latitude for the specified amount of meters.
+     * Note, this method assumes the earth is a sphere and the result is not
+     * going to be very precise for larger distances.
+     *
+     * @param latitude
+     * @param longitude
+     * @param meters
+     * @return the translated coordinate.
+     */
+    $.translateLatitude=function(latitude, longitude, meters) {
+        return [ latitude + meters / DEGREE_LATITUDE_METERS, longitude ];
+    }
+
+    /**
+     * Translate a point by the specified meters along the longitude and
+     * latitude. Note, this method assumes the earth is a sphere and the result
+     * is not going to be very precise for larger distances.
+     *
+     * @param latitude
+     * @param longitude
+     * @param lateralMeters
+     * @param longitudalMeters
+     * @return the translated coordinate.
+     */
+    $.translate=function(latitude, longitude, lateralMeters, longitudalMeters) {
+        var longitudal = $.translateLongitude(latitude, longitude, longitudalMeters);
+        return $.translateLatitude(latitude, longitudal[1], lateralMeters);
+    }
+
+    /**
+     * Compute the Haversine distance between the two coordinates. Haversine is
+     * one of several distance calculation algorithms that exist. It is not very
+     * precise in the sense that it assumes the earth is a perfect sphere, which
+     * it is not. This means precision drops over larger distances. According to
+     * http://en.wikipedia.org/wiki/Haversine_formula there is a 0.5% error
+     * margin given the 1% difference in curvature between the equator and the
+     * poles.
+     *
+     * @param lat1
+     *            the latitude in decimal degrees
+     * @param long1
+     *            the longitude in decimal degrees
+     * @param lat2
+     *            the latitude in decimal degrees
+     * @param long2
+     *            the longitude in decimal degrees
+     * @return the distance in meters
+     */
+    $.distance=function(lat1,long1, lat2, long2) {
+        var deltaLat = toRadians(lat2 - lat1);
+        var deltaLon = toRadians(long2 - long1);
+
+        var a = Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) + Math.cos(toRadians(lat1))
+                * Math.cos(toRadians(lat2)) * Math.sin(deltaLon / 2) * Math.sin(deltaLon / 2);
+
+        var c = 2 * Math.asin(Math.sqrt(a));
+
+        return EARTH_RADIUS * c;
+    }
+
     
 	return $;
 

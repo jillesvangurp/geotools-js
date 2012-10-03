@@ -113,3 +113,24 @@ describe("check if lines cross", function() {
 		expect(!geotools.linesCross(1, 666, 5, 666, 6, 666, 10, 666));
 	});
 });
+
+describe("point translation", function() {
+    it("should translate longitude", function() {
+        var translatedLongitude = geotools.translateLongitude(testPoints.berlin[0],testPoints.berlin[1],1000);
+        expect(translatedLongitude[1]).not.toBe(testPoints.berlin[1]);
+        expect(translatedLongitude[1]).toBe(13.40050308927865);
+    });
+    
+    it("should translate the point", function() {
+        var translated = geotools.translate(testPoints.berlin[0],testPoints.berlin[1], 1000, 3000);
+        var pythagorasDistance = Math.sqrt(Math.pow(1000, 2)+Math.pow(3000,2));
+        var d = geotools.distance(translated[0],translated[1],testPoints.berlin[0], testPoints.berlin[1]);
+        expect(d).toBe(3161.986216876698);
+    });
+});
+
+describe("haversine distance", function() {
+    it("should calculate the distance", function() {
+        expect(geotools.distance(testPoints.berlin[0],testPoints.berlin[1],testPoints.sydney[0],testPoints.sydney[1])).toBe(16095663.428576712);
+    });
+});
