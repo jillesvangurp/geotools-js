@@ -238,6 +238,23 @@ var geotools = function($) {
         return (hits & 1) != 0;
     }
     
+        /**
+     * Simple rounding method that allows you to get rid of some decimals in a
+     * double.
+     *
+     * @param d
+     * @param decimals
+     * @return d rounded to the specified precision
+     */
+   $.roundToDecimals=function(d, decimals) {
+        if (decimals > 17) {
+            throw new Error(
+                    "this probably doesn't do what you want; makes sense only for <= 17 decimals");
+        }
+        var factor = Math.pow(10, decimals);
+        return Math.round(d * factor) / factor;
+    }
+    
 	return $;
 }(geotools || {});
 

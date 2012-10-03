@@ -93,3 +93,9 @@ describe("polygon containment", function() {
 		expect(!geotools.polygonContains(polygon, testPoints.sydney[0],testPoints.sydney[1]));		
 	});
 });
+
+describe("rounding to specified number of decimals", function() {
+	it("should round to two decimals", function(){
+		expect(geotools.roundToDecimals(1.1234,2)).toBe(1.12);
+	});
+});
