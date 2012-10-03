@@ -1,0 +1,31 @@
+h1. Introduction
+
+This is a javascript port of my geotools project, which was written in Java.
+
+A jasmine based test suite is provided.
+
+h1. Features
+
+* GeoGeometry class with methods that allow you to:
+** Calculate distance between two coordinates using the haversine algorithm.
+** check bounding box containment for a point
+** check polygon containment for a point
+** get the center for a polygon
+** get bounding box for a polygon
+** convert circle to a polygon
+** create a polygon from a point cloud
+** translate a wgs84 coordinate by x & y meters along the latitude and longitude
+* GeoHashUtils class with methods that allow you to: 
+** encode and decode geo hashes
+** check containment of a point in a geohash
+** find out the boundingbox of a geohash
+** find out neighboring geohashes east, west, south, or north of a geohash
+** get the 32 sub geo hashes for a geohash, or the north/south halves, or the NE, NW, SE, SW quarters.
+** cover lines, paths, polygons, or circles with geo hashes
+
+h1. Changelog & releases
+
+There is no formal release process for this project. The latest version in git that passes the provided tests should be good 
+enough for general use and generally there should be no reason to use something older. I'll document major changes here.
+
+* port of code from java
