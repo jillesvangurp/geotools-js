@@ -546,6 +546,27 @@ var geotools = function($) {
         }
         return [ geohash.toString(), [ latInterval[0], latInterval[1], lonInterval[0], lonInterval[1] ]];
     }
+    
+    $.geoHashesForCircle=function(length, latitude, longitude, radius) {
+        // bit of a wet finger approach here: it doesn't make much sense to have
+        // lots of segments unless we have a long geohash or a large radius
+        var segments;
+        var suitableHashLength = $.getSuitableHashLength(radius,latitude,longitude);
+        if(length > suitableHashLength-3) {
+            segments=200;
+        } else if(length > suitableHashLength-2) {
+            segments=100;
+        } else if(length > suitableHashLength-1) {
+            segments=50;
+        } else {
+            // we don't seem to care about detail
+            segments=15;
+        }
+
+        var circle2polygon = $.circle2polygon(segments, latitude, longitude, radius);
+        return $.getGeoHashesForPolygon(circle2polygon, length);
+    }
+
 
     
     /**

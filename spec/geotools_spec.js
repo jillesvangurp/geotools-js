@@ -150,6 +150,12 @@ describe("Cover shapes with geohashes", function() {
         expect(hashes.length).toBeGreaterThan(5);
         console.log(JSON.stringify(hashes));
     });
+    
+    it("should cover circle with geohashes", function() {
+        hashes=geotools.geoHashesForCircle(7,52,13,500);
+        expect(hashes.length).toBeGreaterThan(5);
+        console.log(JSON.stringify(hashes));
+    });
 });
 
 describe("bounding box for polygon", function() {
