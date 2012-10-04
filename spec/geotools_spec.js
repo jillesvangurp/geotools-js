@@ -131,6 +131,21 @@ describe("is east/west/north/south", function() {
     });
 });
 
+describe("Get suitable hashLength", function(){
+    it("should return suitable lenth", function() {
+        expect(geotools.getSuitableHashLength(200,52,13)).toBe(7);
+    });
+});
+
+describe("Cover polygon with geohashes", function() {
+    it("should return list of geohashes", function() {
+        var polygon = geotools.getPolygonForPoints([testPoints.potsDammerPlatz, testPoints.senefelderPlatz, testPoints.naturkundeMuseum]);
+        var hashes=geotools.getGeoHashesForPolygon(polygon,7);
+        expect(hashes.length).toBeGreaterThan(5);
+        console.log(JSON.stringify(hashes));
+    });
+});
+
 describe("bounding box for polygon", function() {
     it("should calculate boundingbox for a polygon", function() {
         var polygon = [testPoints.berlin, testPoints.newyork, testPoints.buenosaires];

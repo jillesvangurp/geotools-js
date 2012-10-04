@@ -341,6 +341,128 @@ var geotools = function($) {
     };
 
     /**
+     * Cover the polygon with geo hashes. This is useful for indexing mainly.
+     *
+     * @param maxLength
+     *            maximum length of the geoHash; the more you specify, the more
+     *            expensive it gets
+     * @param polygonPoints
+     *            polygonPoints points that make up the polygon as arrays of
+     *            [latitude,longitude]
+     * @return a set of geo hashes that cover the polygon area.
+     */
+    $.getGeoHashesForPolygon = function(polygonPoints, maxLength) {
+        if (maxLength < 2 || maxLength >= DEFAULT_PRECISION) {
+            throw new Error("maxLength should be between 2 and " + DEFAULT_PRECISION + " was " + maxLength);
+        }
+
+        var bbox = $.bboxForPolygon(polygonPoints);
+        // first lets figure out an appropriate geohash length
+        var diagonal = $.distance(bbox[0], bbox[2], bbox[1], bbox[3]);
+        var hashLength = $.getSuitableHashLength(diagonal, bbox[0], bbox[2]);
+
+        var partiallyContained = [];
+        // now lets generate all geohashes for the containing bounding box
+        // lets start at the top left:
+
+        var rowHash = $.encode(bbox[0], bbox[2], hashLength);
+        var rowBox = $.decode_bbox(rowHash);
+        while (rowBox[0] < bbox[1]) {
+            var columnHash = rowHash;
+            var columnBox = rowBox;
+
+            while ($.isWest(columnBox[2], bbox[3])) {
+                partiallyContained.push(columnHash);
+                columnHash = $.east(columnHash);
+                columnBox = $.decode_bbox(columnHash);
+            }
+
+            // move to the next row
+            rowHash = $.south(rowHash);
+            rowBox = $.decode_bbox(rowHash);
+        }
+        var fullyContained = [];
+
+        var detail = hashLength;
+        // we're not aiming for perfect detail here in terms of 'pixellation', 6
+        // extra chars in the geohash ought to be enough and going beyond 9
+        // doesn't serve much purpose.
+        while (detail < maxLength) {
+            partiallyContained = splitAndFilter(polygonPoints, fullyContained, partiallyContained);
+            detail++;
+        }
+        if (fullyContained.length == 0) {
+            fullyContained = fullyContained.concat(partiallyContained);
+        }
+
+        return fullyContained;
+    }
+    
+    function splitAndFilter(polygonPoints, fullyContained, partiallyContained) {
+        var stillPartial = [];
+        // now we need to break up the partially contained hashes
+        for (var i = 0; i < partiallyContained.length; i++) {
+            var hash = partiallyContained[i];
+            var subHashes = $.subHashes(hash);
+            for (var j = 0; j < subHashes.length; j++) {
+                var h = subHashes[j];
+                var hashBbox = $.decode_bbox(h);
+                var nw = $.polygonContains(polygonPoints, hashBbox[0], hashBbox[2]);
+                var ne = $.polygonContains(polygonPoints, hashBbox[0], hashBbox[3]);
+                var sw = $.polygonContains(polygonPoints, hashBbox[1], hashBbox[2]);
+                var se = $.polygonContains(polygonPoints, hashBbox[1], hashBbox[3]);
+                if (nw && ne && sw && se) {
+                    fullyContained.push(h);
+                } else if (nw || ne || sw || se) {
+                    stillPartial.push(h);
+                } else {
+                    var last = polygonPoints[0];
+                    for (var k = 1; k < polygonPoints.length; k++) {
+                        var current = polygonPoints[k];
+                        if ($.linesCross(hashBbox[0], hashBbox[2], hashBbox[0], hashBbox[3], last[0], last[1], current[0], current[1])) {
+                            stillPartial.push(h);
+                            break;
+                        } else if ($.linesCross(hashBbox[0], hashBbox[3], hashBbox[1], hashBbox[3], last[0], last[1], current[0], current[1])) {
+                            stillPartial.push(h);
+                            break;
+                        } else if ($.linesCross(hashBbox[1], hashBbox[3], hashBbox[1], hashBbox[2], last[0], last[1], current[0], current[1])) {
+                            stillPartial.push(h);
+                            break;
+                        } else if ($.linesCross(hashBbox[1], hashBbox[2], hashBbox[0], hashBbox[2], last[0], last[1], current[0], current[1])) {
+                            stillPartial.push(h);
+                            break;
+                        } 
+                    }
+                }
+            }
+        }
+        return stillPartial;
+    }
+
+    /**
+     * @param granularityInMeters
+     * @param latitude
+     * @param longitude
+     * @return the largest hash length where the hash bbox has a width < granularityInMeters.
+     */
+    $.getSuitableHashLength = function(granularityInMeters, latitude, longitude) {
+        if (granularityInMeters < 5) {
+            return 10;
+        }
+        var hash = $.encode(latitude, longitude);
+        var width = 0;
+        var length = hash.length;
+        // the height is the same at for any latitude given a length, but the width converges towards the poles
+        while (width < granularityInMeters && hash.length >= 2) {
+            length = hash.length;
+            var bbox = $.decode_bbox(hash);
+            width = $.distance(bbox[0], bbox[2], bbox[0], bbox[3]);
+            hash = hash.slice(0, hash.length - 1);
+        }
+
+        return Math.min(length + 1, DEFAULT_PRECISION);
+    }
+    /**
      * @param geoHash
      * @return the 8 south-east sub hashes of the geo hash
      */
