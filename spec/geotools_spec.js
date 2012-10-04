@@ -131,30 +131,27 @@ describe("is east/west/north/south", function() {
     });
 });
 
-describe("Get suitable hashLength", function(){
+describe("Get suitable hashLength", function() {
     it("should return suitable lenth", function() {
-        expect(geotools.getSuitableHashLength(200,52,13)).toBe(7);
+        expect(geotools.getSuitableHashLength(200, 52, 13)).toBe(7);
     });
 });
 
 describe("Cover shapes with geohashes", function() {
     it("should cover polygon with geohashes", function() {
         var polygon = geotools.getPolygonForPoints([testPoints.potsDammerPlatz, testPoints.senefelderPlatz, testPoints.naturkundeMuseum]);
-        var hashes=geotools.getGeoHashesForPolygon(polygon,7);
+        var hashes = geotools.getGeoHashesForPolygon(polygon, 7);
         expect(hashes.length).toBeGreaterThan(5);
-        console.log(JSON.stringify(hashes));
     });
 
     it("should cover line with geohashes", function() {
-        var hashes = geotools.geoHashesForLine(50,testPoints.brandenBurgerGate[0], testPoints.brandenBurgerGate[1], testPoints.potsDammerPlatz[0],testPoints.potsDammerPlatz[1]);
+        var hashes = geotools.geoHashesForLine(50, testPoints.brandenBurgerGate[0], testPoints.brandenBurgerGate[1], testPoints.potsDammerPlatz[0], testPoints.potsDammerPlatz[1]);
         expect(hashes.length).toBeGreaterThan(5);
-        console.log(JSON.stringify(hashes));
     });
-    
+
     it("should cover circle with geohashes", function() {
-        hashes=geotools.geoHashesForCircle(7,52,13,500);
+        hashes = geotools.geoHashesForCircle(7, 52, 13, 500);
         expect(hashes.length).toBeGreaterThan(5);
-        console.log(JSON.stringify(hashes));
     });
 });
 

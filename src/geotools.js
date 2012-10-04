@@ -397,7 +397,6 @@ var geotools = function($) {
 
         return fullyContained;
     }
-    
     function splitAndFilter(polygonPoints, fullyContained, partiallyContained) {
         var stillPartial = [];
         // now we need to break up the partially contained hashes
@@ -431,7 +430,7 @@ var geotools = function($) {
                         } else if ($.linesCross(hashBbox[1], hashBbox[2], hashBbox[0], hashBbox[2], last[0], last[1], current[0], current[1])) {
                             stillPartial.push(h);
                             break;
-                        } 
+                        }
                     }
                 }
             }
@@ -462,7 +461,6 @@ var geotools = function($) {
 
         return Math.min(length + 1, DEFAULT_PRECISION);
     }
-    
     /**
      * @param width
      * @param lat1
@@ -472,7 +470,7 @@ var geotools = function($) {
      * @return set of geo hashes along the line with the specified geo hash
      *         length.
      */
-    $.geoHashesForLine=function(width, lat1, lon1, lat2, lon2) {
+    $.geoHashesForLine = function(width, lat1, lon1, lat2, lon2) {
         if (lat1 == lat2 && lon1 == lon2) {
             throw new error("identical begin and end coordinate: line must have two different points");
         }
@@ -485,34 +483,25 @@ var geotools = function($) {
         var result2 = encodeWithBbox(lat2, lon2, hashLength);
         var bbox2 = result2[1];
 
-        if(result1[0] == result2[0]) { // same geohash for begin and end
+        if (result1[0] == result2[0]) {// same geohash for begin and end
             return [result1[0]];
-        } else if (lat1 != lat2 ) {
-            return $.getGeoHashesForPolygon([
-                    [ bbox1[0], bbox1[2] ],
-                    [ bbox1[1], bbox1[2] ],
-                    [ bbox2[1], bbox2[3] ],
-                    [ bbox2[0], bbox2[3] ]], hashLength);
+        } else if (lat1 != lat2) {
+            return $.getGeoHashesForPolygon([[bbox1[0], bbox1[2]], [bbox1[1], bbox1[2]], [bbox2[1], bbox2[3]], [bbox2[0], bbox2[3]]], hashLength);
         } else {
-            return $.getGeoHashesForPolygon([
-                    [ bbox1[0], bbox1[2] ],
-                    [ bbox1[0], bbox1[3] ],
-                    [ bbox2[1], bbox2[2] ],
-                    [ bbox2[1], bbox2[3] ]],hashLength);
+            return $.getGeoHashesForPolygon([[bbox1[0], bbox1[2]], [bbox1[0], bbox1[3]], [bbox2[1], bbox2[2]], [bbox2[1], bbox2[3]]], hashLength);
         }
     }
-    
     function encodeWithBbox(latitude, longitude, length) {
         if (length < 1 || length > 12) {
             throw new Error("length must be between 1 and 12");
         }
-        var latInterval = [ -90.0, 90.0 ];
-        var lonInterval = [ -180.0, 180.0 ];
-    
+        var latInterval = [-90.0, 90.0];
+        var lonInterval = [-180.0, 180.0];
+
         var geohash = '';
         var is_even = true;
         var bit = 0, ch = 0;
-    
+
         while (geohash.length < length) {
             var mid = 0.0;
             if (is_even) {
@@ -523,7 +512,7 @@ var geotools = function($) {
                 } else {
                     lonInterval[1] = mid;
                 }
-    
+
             } else {
                 mid = (latInterval[0] + latInterval[1]) / 2;
                 if (latitude > mid) {
@@ -533,9 +522,9 @@ var geotools = function($) {
                     latInterval[1] = mid;
                 }
             }
-    
+
             is_even = is_even ? false : true;
-    
+
             if (bit < 4) {
                 bit++;
             } else {
@@ -544,31 +533,29 @@ var geotools = function($) {
                 ch = 0;
             }
         }
-        return [ geohash.toString(), [ latInterval[0], latInterval[1], lonInterval[0], lonInterval[1] ]];
+        return [geohash.toString(), [latInterval[0], latInterval[1], lonInterval[0], lonInterval[1]]];
     }
-    
-    $.geoHashesForCircle=function(length, latitude, longitude, radius) {
+
+
+    $.geoHashesForCircle = function(length, latitude, longitude, radius) {
         // bit of a wet finger approach here: it doesn't make much sense to have
         // lots of segments unless we have a long geohash or a large radius
         var segments;
-        var suitableHashLength = $.getSuitableHashLength(radius,latitude,longitude);
-        if(length > suitableHashLength-3) {
-            segments=200;
-        } else if(length > suitableHashLength-2) {
-            segments=100;
-        } else if(length > suitableHashLength-1) {
-            segments=50;
+        var suitableHashLength = $.getSuitableHashLength(radius, latitude, longitude);
+        if (length > suitableHashLength - 3) {
+            segments = 200;
+        } else if (length > suitableHashLength - 2) {
+            segments = 100;
+        } else if (length > suitableHashLength - 1) {
+            segments = 50;
         } else {
             // we don't seem to care about detail
-            segments=15;
+            segments = 15;
         }
 
         var circle2polygon = $.circle2polygon(segments, latitude, longitude, radius);
         return $.getGeoHashesForPolygon(circle2polygon, length);
     }
-
-
-    
     /**
      * @param geoHash
      * @return the 8 south-east sub hashes of the geo hash
