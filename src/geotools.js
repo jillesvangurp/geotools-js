@@ -462,6 +462,92 @@ var geotools = function($) {
 
         return Math.min(length + 1, DEFAULT_PRECISION);
     }
+    
+    /**
+     * @param width
+     * @param lat1
+     * @param lon1
+     * @param lat2
+     * @param lon2
+     * @return set of geo hashes along the line with the specified geo hash
+     *         length.
+     */
+    $.geoHashesForLine=function(width, lat1, lon1, lat2, lon2) {
+        if (lat1 == lat2 && lon1 == lon2) {
+            throw new error("identical begin and end coordinate: line must have two different points");
+        }
+
+        var hashLength = $.getSuitableHashLength(width, lat1, lon1);
+
+        var result1 = encodeWithBbox(lat1, lon1, hashLength);
+        var bbox1 = result1[1];
+
+        var result2 = encodeWithBbox(lat2, lon2, hashLength);
+        var bbox2 = result2[1];
+
+        if(result1[0] == result2[0]) { // same geohash for begin and end
+            return [result1[0]];
+        } else if (lat1 != lat2 ) {
+            return $.getGeoHashesForPolygon([
+                    [ bbox1[0], bbox1[2] ],
+                    [ bbox1[1], bbox1[2] ],
+                    [ bbox2[1], bbox2[3] ],
+                    [ bbox2[0], bbox2[3] ]], hashLength);
+        } else {
+            return $.getGeoHashesForPolygon([
+                    [ bbox1[0], bbox1[2] ],
+                    [ bbox1[0], bbox1[3] ],
+                    [ bbox2[1], bbox2[2] ],
+                    [ bbox2[1], bbox2[3] ]],hashLength);
+        }
+    }
+    
+    function encodeWithBbox(latitude, longitude, length) {
+        if (length < 1 || length > 12) {
+            throw new Error("length must be between 1 and 12");
+        }
+        var latInterval = [ -90.0, 90.0 ];
+        var lonInterval = [ -180.0, 180.0 ];
+    
+        var geohash = '';
+        var is_even = true;
+        var bit = 0, ch = 0;
+    
+        while (geohash.length < length) {
+            var mid = 0.0;
+            if (is_even) {
+                mid = (lonInterval[0] + lonInterval[1]) / 2;
+                if (longitude > mid) {
+                    ch |= BITS[bit];
+                    lonInterval[0] = mid;
+                } else {
+                    lonInterval[1] = mid;
+                }
+    
+            } else {
+                mid = (latInterval[0] + latInterval[1]) / 2;
+                if (latitude > mid) {
+                    ch |= BITS[bit];
+                    latInterval[0] = mid;
+                } else {
+                    latInterval[1] = mid;
+                }
+            }
+    
+            is_even = is_even ? false : true;
+    
+            if (bit < 4) {
+                bit++;
+            } else {
+                geohash += BASE32_CHARS[ch];
+                bit = 0;
+                ch = 0;
+            }
+        }
+        return [ geohash.toString(), [ latInterval[0], latInterval[1], lonInterval[0], lonInterval[1] ]];
+    }
+
+    
     /**
      * @param geoHash
      * @return the 8 south-east sub hashes of the geo hash

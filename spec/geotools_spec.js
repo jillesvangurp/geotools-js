@@ -137,10 +137,16 @@ describe("Get suitable hashLength", function(){
     });
 });
 
-describe("Cover polygon with geohashes", function() {
-    it("should return list of geohashes", function() {
+describe("Cover shapes with geohashes", function() {
+    it("should cover polygon with geohashes", function() {
         var polygon = geotools.getPolygonForPoints([testPoints.potsDammerPlatz, testPoints.senefelderPlatz, testPoints.naturkundeMuseum]);
         var hashes=geotools.getGeoHashesForPolygon(polygon,7);
+        expect(hashes.length).toBeGreaterThan(5);
+        console.log(JSON.stringify(hashes));
+    });
+
+    it("should cover line with geohashes", function() {
+        var hashes = geotools.geoHashesForLine(50,testPoints.brandenBurgerGate[0], testPoints.brandenBurgerGate[1], testPoints.potsDammerPlatz[0],testPoints.potsDammerPlatz[1]);
         expect(hashes.length).toBeGreaterThan(5);
         console.log(JSON.stringify(hashes));
     });
