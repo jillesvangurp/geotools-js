@@ -1,6 +1,6 @@
 h1. Introduction
 
-This is a javascript port of my geotools project, which was written in Java.
+This is a javascript port of my "geotools":https://github.com/jillesvangurp/geotools project, which was written in Java.
 
 A jasmine based test suite is provided.
 
@@ -22,6 +22,10 @@ h1. Features
 ** find out neighboring geohashes east, west, south, or north of a geohash
 ** get the 32 sub geo hashes for a geohash, or the north/south halves, or the NE, NW, SE, SW quarters.
 ** cover lines, paths, polygons, or circles with geo hashes
+
+h1. Design
+
+This library could have included a framework for defining points, lines, polygons, bounding boxes, etc. like many other libraries do. This is the main reason it doesn't. Instead this library loosely follows the geojson conventions of using arrays. A point is represented as [latitude,longitude]. A polygon is an array of points. A bounding box is an array of [minlat,maxlat,minlon,maxlon], etc. So, this library is pretty easy to use and combine with e.g. the google maps API, which of course comes with its own constructs for these things or the Nokia maps API, which provides yet more ways to represent the same things. 
 
 h1. Changelog & releases
 
