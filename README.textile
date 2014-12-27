@@ -4,6 +4,8 @@ This is a javascript port of my "geotools":https://github.com/jillesvangurp/geot
 
 A jasmine based test suite is provided.
 
+*Important* This project has fallen behind the java version a bit. So, somebody with some extra time could probably improve things by porting over some of the fixes and algorithms from there. This should be relatively straightforward. Also, some npm or bower packaging would probably be nice to have. I welcome pull requests for this.
+
 h1. Features
 
 * GeoGeometry class with methods that allow you to:
