@@ -4,7 +4,7 @@ This is a javascript port of my "geotools":https://github.com/jillesvangurp/geot
 
 A jasmine based test suite is provided.
 
-*Important* This project has fallen behind the Kotlin version quite a bit and I no longer maintain this. You may want to checkout the [Kotlin version](https://github.com/jillesvangurp/geogeometry), which **cross compiles to Javascript** via the Kotlin multiplatform support.
+*Important* This project has fallen behind the Kotlin version quite a bit and I no longer maintain this. You may want to checkout the "Kotlin Version":https://github.com/jillesvangurp/geogeometry, which **cross compiles to Javascript** via the Kotlin multiplatform support.
 
 h1. Features
 
